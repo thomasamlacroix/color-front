@@ -32,7 +32,7 @@ MAX_SIZE = 4000  #pixels in height or width
 
 #Test image
 TEST_IMG_BW = 'images/image0001_bw.jpg'
-TEST_IMG_COLOR = 'images/image0001_bw.jpg'
+TEST_IMG_COLOR = 'images/image0001.jpg'
 
 #####################
 # Page configuration
@@ -52,7 +52,7 @@ COLOR-RISE
 
 st.markdown("""
 <p style='text-align:center; font-size:25px;'>
-<b>Protecting authenticity in the age of AI !</b>
+<b>Bringing color back</b>
 </p>
 """, unsafe_allow_html=True)
 
