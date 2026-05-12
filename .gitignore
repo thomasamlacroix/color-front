@@ -1,9 +1,11 @@
 data/
 training_outputs/
+images/
 
 .python-version
 
 .env
+.envrc
 
 mlflow.db
 
