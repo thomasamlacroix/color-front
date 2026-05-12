@@ -5,25 +5,25 @@ import base64
 import io
 
 #API url
-SERVICE_URL = ""
+SERVICE_URL = "http://127.0.0.1:8000"
 
 #API token
 # TOKEN =
 
 #Colors
 #------
-ROUGE = '#FF4B4B'
-BLEU = '#1f77b4'
-VERT = '#2ECC71'
+RED = '#FF4B4B'
+BLUE = '#1f77b4'
+GREEN = '#2ECC71'
 ORANGE = '#F39C12'
-BLEU_FONCE = "#1F4E79"
-JAUNE = '#F1C40F'
-VIOLET = '#8E44AD'
+DARK_BLUE = "#1F4E79"
+YELLOW = '#F1C40F'
+PURPLE = '#8E44AD'
 CYAN = '#1ABC9C'
-GRIS_CLAIR = '#F5F7FA'
-GRIS_FONCE = '#34495E'
-NOIR = '#000000'
-BLANC = '#FFFFFF'
+LIGHT_GREY = '#F5F7FA'
+DARK_GREY = '#34495E'
+BLACK = '#000000'
+WHITE = '#FFFFFF'
 
 # Maximum image size
 #####################
@@ -52,7 +52,7 @@ COLOR-RISE
 
 st.markdown("""
 <p style='text-align:center; font-size:25px;'>
-<b>Bringing color back</b>
+<b>Bringing color back to life</b>
 </p>
 """, unsafe_allow_html=True)
 
@@ -91,16 +91,57 @@ def validate_image(uploaded_file, max_size=MAX_SIZE):
     return image
 
 
+st.markdown("### How does it work?")
+st.write("""
+1. Upload your image
+2. AI based on deep learning reconstructs color channels
+""")
+
 
 #First version with placeholders
-uploaded_file = TEST_IMG_BW
+# uploaded_file = TEST_IMG_BW
+
+uploaded_file = st.file_uploader(
+        "📷 Upload your image",
+        type=["jpg","jpeg","png","gif","bmp","MPO"], #filtering at interface level
+        key = "file"
+)
+
 
 if uploaded_file is not None:
     image = validate_image(uploaded_file)
 
-    initial_uploaded_image = image
-    img_reconstructed = Image.open(TEST_IMG_COLOR)
-    #Affichage des images côte à côte (loadée et heatmap)
-    col1, col2 = st.columns(2)
-    col1.image(initial_uploaded_image, caption="Uploaded image", width='stretch')
-    col2.image(img_reconstructed, caption=f"Colorized image", width='stretch')
+    # initial_uploaded_image = image
+    # img_reconstructed = Image.open(TEST_IMG_COLOR)
+    # col1, col2 = st.columns(2)
+    # col1.image(initial_uploaded_image, caption="Uploaded image", width='stretch')
+    # col2.image(img_reconstructed, caption=f"Colorized image", width='stretch')
+
+    if image is not None :
+            #Resetting pointer after image verification to avoid empty file and API error
+            uploaded_file.seek(0)
+            #Sending file to API
+            with st.spinner("🔍 Reconstructing colors..."): #hourglass if taking too long
+                files = {"file" : uploaded_file }
+                #headers = {'token' : TOKEN}
+                response = requests.post(SERVICE_URL, files=files)  #, headers=headers)
+
+    if response.status_code == 200:
+        data  = response.json()
+        #Decoding binary image
+        img_bw_resized_data = base64.b64decode(data["img_bw_resized"])
+        img_reconstructed_data = base64.b64decode(data["img_reconstructed"]) #decoding binary image
+
+        #Turning into actual images
+        img_bw_resized = Image.open(io.BytesIO(img_bw_resized_data))
+        img_reconstructed = Image.open(io.BytesIO(img_reconstructed_data))
+
+        col1, col2 = st.columns(2)
+        col1.image(img_bw_resized, caption="Uploaded image", width='stretch')
+        col2.image(img_reconstructed, caption="Colorized image", width='stretch')
+
+    else:
+        st.error("Error calling the API")
+
+else:
+    st.write("No file uploaded yet")
