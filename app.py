@@ -5,7 +5,7 @@ import base64
 import io
 
 #API url
-SERVICE_URL = "http://127.0.0.1:8000"
+SERVICE_URL = "http://localhost:8000/predict_color/"
 
 #API token
 # TOKEN =
@@ -39,21 +39,21 @@ TEST_IMG_COLOR = 'images/image0001.jpg'
 #####################
 
 st.set_page_config(
-    page_title="COLOR-RISE",
+    page_title="COLOR-RISE!",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 #st.title("D-FAKE")
 st.markdown("""
-<h1 style='text-align:center; color:BLACK;'>
-COLOR-RISE
+<h1 style='text-align:center; color:PURPLE;'>
+COLOR-RISE!
 </h1>
 """, unsafe_allow_html=True)
 
 st.markdown("""
-<p style='text-align:center; font-size:25px;'>
+<h2 style='text-align:center; font-size:25px; color:GREEN;'>
 <b>Bringing color back to life</b>
-</p>
+</h2>
 """, unsafe_allow_html=True)
 
 st.markdown("---")
@@ -91,10 +91,11 @@ def validate_image(uploaded_file, max_size=MAX_SIZE):
     return image
 
 
-st.markdown("### How does it work?")
+st.markdown("## How does it work?")
+
 st.write("""
 1. Upload your image
-2. AI based on deep learning reconstructs color channels
+2. Deep learning model reconstructs color channels
 """)
 
 
@@ -111,20 +112,14 @@ uploaded_file = st.file_uploader(
 if uploaded_file is not None:
     image = validate_image(uploaded_file)
 
-    # initial_uploaded_image = image
-    # img_reconstructed = Image.open(TEST_IMG_COLOR)
-    # col1, col2 = st.columns(2)
-    # col1.image(initial_uploaded_image, caption="Uploaded image", width='stretch')
-    # col2.image(img_reconstructed, caption=f"Colorized image", width='stretch')
-
     if image is not None :
-            #Resetting pointer after image verification to avoid empty file and API error
-            uploaded_file.seek(0)
-            #Sending file to API
-            with st.spinner("🔍 Reconstructing colors..."): #hourglass if taking too long
-                files = {"file" : uploaded_file }
-                #headers = {'token' : TOKEN}
-                response = requests.post(SERVICE_URL, files=files)  #, headers=headers)
+        #Resetting pointer after image verification to avoid empty file and API error
+        uploaded_file.seek(0)
+        #Sending file to API
+        with st.spinner("🔍 Reconstructing colors..."): #hourglass if taking too long
+            files = {"file" : uploaded_file }
+            #headers = {'token' : TOKEN}
+            response = requests.post(SERVICE_URL, files=files)  #, headers=headers)
 
     if response.status_code == 200:
         data  = response.json()
